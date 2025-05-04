@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Ocean Shield{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden">
+    <div class="container py-5">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h1 class="display-4 fw-bold mb-4 text-gradient">Ocean Shield - Smart Marine Trash Detection</h1>
+                <p class="lead mb-4 text-muted">Leverage cutting-edge deep learning technology to detect and analyze marine debris with unprecedented accuracy and speed.</p>
+                <div class="d-flex gap-3">
+
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="position-relative">
+                    <div class="floating-image">
+                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Ocean Shield Demo" class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="wave-divider">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#f8fafc" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Key Features</h2>
+            <p class="text-muted">Discover the powerful capabilities of our marine trash detection system</p>
+        </div>
+        <div class="row">
+            <!-- Feature 1 -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-4">
+                            <i class="fas fa-bolt fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Real-time Detection</h4>
+                        <p class="card-text text-muted">Process images and video streams in real-time with minimal latency, providing instant feedback on marine debris detection.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-4">
+                            <i class="fas fa-chart-line fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Advanced Analytics</h4>
+                        <p class="card-text text-muted">Get comprehensive statistics and detailed analysis of detected objects, including type, confidence, and location data.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-4">
+                            <i class="fas fa-file-csv fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Data Export</h4>
+                        <p class="card-text text-muted">Export detection results to CSV format for further analysis, reporting, and integration with other systems.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">How It Works</h2>
+            <p class="text-muted">Simple steps to powerful marine debris detection</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row">
+                    <!-- Step 1 -->
+                    <div class="col-md-4 mb-4 text-center" data-aos="fade-up" data-aos-delay="100">
+                        <div class="step-number mb-4 mx-auto">
+                            <span class="h3 m-0">1</span>
+                        </div>
+                        <h4 class="mb-3">Upload</h4>
+                        <p class="text-muted">Upload your image or video file through our intuitive interface. We support various formats and resolutions.</p>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div class="col-md-4 mb-4 text-center" data-aos="fade-up" data-aos-delay="200">
+                        <div class="step-number mb-4 mx-auto">
+                            <span class="h3 m-0">2</span>
+                        </div>
+                        <h4 class="mb-3">Process</h4>
+                        <p class="text-muted">Our advanced YOLO model analyzes the content and identifies marine debris with high accuracy in real-time.</p>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div class="col-md-4 mb-4 text-center" data-aos="fade-up" data-aos-delay="300">
+                        <div class="step-number mb-4 mx-auto">
+                            <span class="h3 m-0">3</span>
+                        </div>
+                        <h4 class="mb-3">View Results</h4>
+                        <p class="text-muted">Get detailed detection results with visual annotations, analytics, and export options for further analysis.</p>
+                    </div>
+                </div>
+                
+                <!-- Animated Progress Line for desktop -->
+                <div class="position-relative my-4 d-none d-md-block">
+                    <div class="progress-line-container">
+                        <div class="progress-line" id="progress-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+            <a href="{{ url_for('detection') }}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-play-circle mr-2"></i>Try It Now
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <h2 class="section-title mb-4">Powered by Advanced Technology</h2>
+                <p class="mb-4">Our system uses YOLO (You Only Look Once), a state-of-the-art object detection algorithm that offers both speed and accuracy.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="mr-3">
+                                <div class="bg-primary text-white rounded-circle p-2" style="width: 36px; height: 36px; text-align: center;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>High Accuracy Detection</h5>
+                                <p class="text-muted">Identify various types of marine debris with high confidence scores</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="mr-3">
+                                <div class="bg-primary text-white rounded-circle p-2" style="width: 36px; height: 36px; text-align: center;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>Real-time Processing</h5>
+                                <p class="text-muted">Process video streams at high frame rates with minimal latency</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="mb-3">
+                        <div class="d-flex">
+                            <div class="mr-3">
+                                <div class="bg-primary text-white rounded-circle p-2" style="width: 36px; height: 36px; text-align: center;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5>Advanced Data Analysis</h5>
+                                <p class="text-muted">Extract meaningful insights from detection data</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
+                    <div class="card-body p-0">
+                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="YOLO Detection" class="img-fluid w-100">
+                        <div class="p-4">
+                            <h4>YOLO Object Detection</h4>
+                            <p class="text-muted mb-0">Our platform utilizes the latest version of YOLO, specifically trained to identify marine debris in various underwater environments.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center" data-aos="zoom-in">
+                <h2 class="display-5 fw-bold mb-4">Ready to experience advanced marine debris detection?</h2>
+                <p class="lead mb-4">Join us in protecting our oceans by detecting and analyzing marine debris with cutting-edge AI technology.</p>
+                <a href="{{ url_for('detection') }}" class="btn btn-light btn-lg px-5">
+                    <i class="fas fa-camera mr-2"></i>Start Detection
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--light-color) 0%, var(--bg-color) 100%);
+        padding: 4rem 0 6rem;
+        margin-bottom: 20px;
+    }
+
+    .text-gradient {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+
+    .floating-image {
+        animation: float 6s ease-in-out infinite;
+        box-shadow: var(--box-shadow);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(8, 145, 178, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-number {
+        width: 60px;
+        height: 60px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .progress-line-container {
+        position: relative;
+        height: 3px;
+        background-color: #e2e8f0;
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 50px 0;
+    }
+
+    .progress-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+        transition: width 1.5s ease-in-out;
+    }
+
+    .wave-divider {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        line-height: 0;
+        z-index: 1;
+    }
+    
+    .wave-divider svg path {
+        fill: var(--bg-color);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 3rem 0 4rem;
+        }
+        
+        .text-gradient {
+            font-size: 2.5rem;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate the progress line
+        setTimeout(function() {
+            const progressLine = document.getElementById('progress-line');
+            if (progressLine) {
+                progressLine.style.width = '100%';
+            }
+        }, 500);
+    });
+</script>
+{% endblock %}

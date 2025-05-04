@@ -1,0 +1,780 @@
+{% extends "base.html" %}
+
+{% block title %}Detection - Ocean Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Detection Page Specific Styles */
+    .detection-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        color: white;
+        border-radius: var(--border-radius);
+    }
+    
+    .detection-container {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .tab-container {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+    
+    .nav-pills .nav-link {
+        color: var(--text-color);
+        font-weight: 500;
+        padding: 1rem 1.5rem;
+        border-radius: var(--border-radius);
+        margin-right: 0.5rem;
+        transition: var(--transition);
+        border: 1px solid transparent;
+    }
+    
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-pills .nav-link:not(.active):hover {
+        background-color: var(--light-color);
+        border-color: var(--primary-light);
+    }
+    
+    .tab-content {
+        padding: 1.5rem 0;
+    }
+    
+    .video-container {
+        position: relative;
+        width: 100%;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        background-color: #121212;
+        box-shadow: var(--box-shadow);
+        min-height: 400px;
+    }
+    
+    .video-feed {
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+        object-fit: contain;
+    }
+    
+    .detection-controls {
+        margin: 1.5rem 0;
+    }
+    
+    .detection-controls .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .custom-file {
+        margin-bottom: 1rem;
+    }
+    
+    .custom-file-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .custom-file-label::after {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .uploaded-image {
+        max-width: 100%;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .detection-results {
+        max-height: 400px;
+        overflow-y: auto;
+        border-radius: var(--border-radius);
+    }
+    
+    .detection-results .table {
+        margin-bottom: 0;
+    }
+    
+    .detection-results .table th {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1;
+        border-top: none;
+    }
+    
+    .result-card {
+        height: 100%;
+    }
+    
+    .result-card .card-header {
+        background-color: var(--light-color);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.25rem;
+    }
+    
+    .result-card .card-header h5 {
+        margin-bottom: 0;
+        color: var(--dark-color);
+    }
+    
+    .image-preview-container {
+        background-color: var(--light-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+        transition: var(--transition);
+    }
+    
+    .image-preview-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted-color);
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .image-preview-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+    
+    .confidence-high {
+        color: var(--success);
+    }
+    
+    .confidence-medium {
+        color: var(--warning);
+    }
+    
+    .confidence-low {
+        color: var(--danger);
+    }
+    
+    .detection-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 50rem;
+        font-weight: 500;
+    }
+    
+    .timestamp {
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+    }
+    
+    .box-coords {
+        font-size: 0.75rem;
+        color: var(--muted-color);
+        font-family: 'Courier New', monospace;
+    }
+    
+    /* Animated elements */
+    .processing-animation {
+        animation: pulse 1.5s infinite ease-in-out;
+    }
+    
+    /* Tooltip customization */
+    .tooltip-inner {
+        background-color: var(--dark-color);
+        border-radius: 4px;
+        max-width: 200px;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .bs-tooltip-auto[x-placement^=top] .arrow::before, 
+    .bs-tooltip-top .arrow::before {
+        border-top-color: var(--dark-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Detection Header -->
+<div class="container">
+    <div class="detection-header" data-aos="fade-up">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2 text-center">
+                    <h1 class="mb-3"><i class="fas fa-search mr-2"></i>Marine Debris Detection</h1>
+                    <p class="lead mb-0">Upload images or videos to detect marine debris using our advanced YOLO model.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Main Detection Area -->
+<div class="container">
+    <div class="detection-container" data-aos="fade-up" data-aos-delay="200">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-pills mb-4" id="detectionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="video-tab" data-toggle="tab" data-target="#video" type="button" role="tab" aria-controls="video" aria-selected="true">
+                    <i class="fas fa-video mr-2"></i>Video Detection
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="image-tab" data-toggle="tab" data-target="#image" type="button" role="tab" aria-controls="image" aria-selected="false">
+                    <i class="fas fa-image mr-2"></i>Image Detection
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="detectionTabsContent">
+            <!-- VIDEO TAB -->
+            <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
+                <div class="row">
+                    <div class="col-lg-8 mb-4 mb-lg-0">
+                        <!-- Video Feed -->
+                        <div class="video-container" data-aos="fade-right" data-aos-delay="300">
+                            <img src="{{ url_for('video_feed') }}" class="video-feed" id="video-feed" alt="Video Feed">
+                        </div>
+                        
+                        <!-- Video Controls -->
+                        <div class="row detection-controls" data-aos="fade-up" data-aos-delay="400">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <form id="video-form" enctype="multipart/form-data">
+                                    <div class="custom-file mb-2">
+                                        <input type="file" class="custom-file-input" id="video-upload" accept="video/*">
+                                        <label class="custom-file-label" for="video-upload">Choose video file</label>
+                                    </div>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-upload mr-2"></i>Upload Video
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <button class="btn btn-success btn-block" id="toggle-detection">
+                                    <i class="fas fa-play mr-2"></i>Enable Detection
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info btn-block" id="download-csv" data-toggle="tooltip" title="Download all detection data as CSV">
+                                    <i class="fas fa-download mr-2"></i>Download CSV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Message -->
+                        <div class="alert alert-info" id="video-status" data-aos="fade-up" data-aos-delay="500">
+                            <i class="fas fa-info-circle mr-2"></i>Status: No video selected
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Detection Results for Video -->
+                        <div class="card result-card" data-aos="fade-left" data-aos-delay="300">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>
+                                    <i class="fas fa-list-ul mr-2"></i>Live Detections
+                                </h5>
+                                <button class="btn btn-sm btn-outline-danger" id="clear-detections" data-toggle="tooltip" title="Clear all detection results">
+                                    <i class="fas fa-trash-alt mr-1"></i>Clear
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="detection-results">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 30%">Time</th>
+                                                <th style="width: 40%">Class</th>
+                                                <th style="width: 30%">Confidence</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="detection-results">
+                                            <tr>
+                                                <td colspan="3" class="text-center py-4">No detections yet</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IMAGE TAB -->
+            <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
+                <div class="row">
+                    <div class="col-lg-8 mb-4 mb-lg-0">
+                        <!-- Image Preview -->
+                        <div class="image-preview-container" id="image-preview-container" data-aos="fade-right" data-aos-delay="300">
+                            <div class="image-preview-placeholder" id="image-preview-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Upload an image to see detection results here</p>
+                                <small class="text-muted mt-2">Supported formats: JPG, PNG, BMP</small>
+                            </div>
+                            <img id="image-preview" class="uploaded-image" style="display: none;" alt="Processed Image">
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Image Upload and Detection Results Side by Side -->
+                        <div class="row">
+                            <!-- Image Upload -->
+                            <div class="col-12 mb-4" data-aos="fade-left" data-aos-delay="300">
+                                <div class="card result-card">
+                                    <div class="card-header">
+                                        <h5>
+                                            <i class="fas fa-upload mr-2"></i>Upload Image
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="image-form" enctype="multipart/form-data">
+                                            <div class="form-group">
+                                                <div class="custom-file mb-3">
+                                                    <input type="file" class="custom-file-input" id="image-upload" accept="image/*">
+                                                    <label class="custom-file-label" for="image-upload">Choose image file</label>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary btn-block">
+                                                    <i class="fas fa-search mr-2"></i>Process Image
+                                                </button>
+                                            </div>
+                                            <p class="text-muted small mb-0">
+                                                <i class="fas fa-info-circle mr-1"></i> Upload an image to detect marine debris with our YOLO model.
+                                            </p>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Detection Results for Images -->
+                            <div class="col-12" data-aos="fade-left" data-aos-delay="400">
+                                <div class="card result-card">
+                                    <div class="card-header">
+                                        <h5>
+                                            <i class="fas fa-tags mr-2"></i>Detection Results
+                                        </h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="detection-results">
+                                            <table class="table table-hover mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 40%">Class</th>
+                                                        <th style="width: 25%">Confidence</th>
+                                                        <th style="width: 35%">Box</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="image-detection-results">
+                                                    <tr>
+                                                        <td colspan="3" class="text-center py-4">No detections yet</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="row mb-5" data-aos="fade-up">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="mb-4 text-center">How Ocean Shield Detection Works</h3>
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="rounded-circle bg-light p-4 d-inline-block mb-3">
+                                <i class="fas fa-upload fa-3x text-primary"></i>
+                            </div>
+                            <h5>1. Upload Media</h5>
+                            <p class="text-muted">Upload your image or video file through our secure interface.</p>
+                        </div>
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="rounded-circle bg-light p-4 d-inline-block mb-3">
+                                <i class="fas fa-cogs fa-3x text-primary"></i>
+                            </div>
+                            <h5>2. AI Processing</h5>
+                            <p class="text-muted">Our YOLO model analyzes the content for marine debris.</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="rounded-circle bg-light p-4 d-inline-block mb-3">
+                                <i class="fas fa-chart-bar fa-3x text-primary"></i>
+                            </div>
+                            <h5>3. View Results</h5>
+                            <p class="text-muted">Get real-time detection results and download data for analysis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // DOM Elements - Video Tab
+    const videoForm = document.getElementById('video-form');
+    const videoUpload = document.getElementById('video-upload');
+    const toggleDetectionBtn = document.getElementById('toggle-detection');
+    const downloadCsvBtn = document.getElementById('download-csv');
+    const clearDetectionsBtn = document.getElementById('clear-detections');
+    const videoStatusElement = document.getElementById('video-status');
+    const detectionResults = document.getElementById('detection-results');
+    
+    // DOM Elements - Image Tab
+    const imageForm = document.getElementById('image-form');
+    const imageUpload = document.getElementById('image-upload');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const imagePreviewPlaceholder = document.getElementById('image-preview-placeholder');
+    const imageDetectionResults = document.getElementById('image-detection-results');
+    
+    // Global state
+    let detectionEnabled = false;
+    let currentTab = 'video';
+    let detectionUpdateInterval = null;
+    let lastDetectionCount = 0;
+    
+    // Initialize tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    
+    // Update custom file input labels with selected filename
+    document.querySelectorAll('.custom-file-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || 'Choose file';
+            const label = e.target.nextElementSibling;
+            label.innerText = fileName;
+        });
+    });
+    
+    // Tab change event handler
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        currentTab = e.target.getAttribute('aria-controls');
+        
+        // Stop detection updates when switching to image tab
+        if (currentTab === 'image' && detectionUpdateInterval) {
+            clearInterval(detectionUpdateInterval);
+            detectionUpdateInterval = null;
+        }
+        
+        // Restart detection updates when switching back to video tab
+        if (currentTab === 'video' && detectionEnabled && !detectionUpdateInterval) {
+            startDetectionUpdates();
+        }
+    });
+    
+    // VIDEO TAB FUNCTIONALITY
+    // Upload video
+    videoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const file = videoUpload.files[0];
+        if (!file) {
+            alert('Please select a video file.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('video', file);
+        
+        // Update status
+        videoStatusElement.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Status: Uploading video...';
+        videoStatusElement.className = 'alert alert-warning';
+        
+        fetch('/upload_video', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                videoStatusElement.innerHTML = `<i class="fas fa-check-circle mr-2"></i>Status: Video loaded - ${file.name}`;
+                videoStatusElement.className = 'alert alert-success';
+                
+                // Reset detection state
+                detectionEnabled = false;
+                toggleDetectionBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Enable Detection';
+                toggleDetectionBtn.className = 'btn btn-success btn-block';
+                
+                // Clear detection results
+                detectionResults.innerHTML = '<tr><td colspan="3" class="text-center py-4">No detections yet</td></tr>';
+                
+                // Clear any existing detections on the server
+                fetch('/clear_detections', { method: 'POST' });
+            } else {
+                videoStatusElement.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>Error: ${data.message}`;
+                videoStatusElement.className = 'alert alert-danger';
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading video:', error);
+            videoStatusElement.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Error uploading video. Check console for details.';
+            videoStatusElement.className = 'alert alert-danger';
+        });
+    });
+    
+    // Toggle detection
+    toggleDetectionBtn.addEventListener('click', () => {
+        fetch('/toggle_detection', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            detectionEnabled = data.detection === 'enabled';
+            
+            if (detectionEnabled) {
+                toggleDetectionBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>Disable Detection';
+                toggleDetectionBtn.className = 'btn btn-warning btn-block';
+                videoStatusElement.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Status: Detection enabled';
+                videoStatusElement.className = 'alert alert-success';
+                // Start periodic detection results update
+                startDetectionUpdates();
+            } else {
+                toggleDetectionBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Enable Detection';
+                toggleDetectionBtn.className = 'btn btn-success btn-block';
+                videoStatusElement.innerHTML = '<i class="fas fa-info-circle mr-2"></i>Status: Detection disabled';
+                videoStatusElement.className = 'alert alert-info';
+                // Stop updates
+                if (detectionUpdateInterval) {
+                    clearInterval(detectionUpdateInterval);
+                    detectionUpdateInterval = null;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling detection:', error);
+            alert('Error toggling detection');
+        });
+    });
+    
+    // Download CSV
+    downloadCsvBtn.addEventListener('click', () => {
+        // Check if there are detections to download
+        fetch('/get_latest_detections')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' && data.detections && data.detections.length > 0) {
+                    window.location.href = '/download_csv';
+                } else {
+                    alert('No detections to download. Enable detection and process some frames first.');
+                }
+            })
+            .catch(error => {
+                console.error('Error checking detections:', error);
+                alert('Error checking detections');
+            });
+    });
+    
+    // Clear detections
+    clearDetectionsBtn.addEventListener('click', () => {
+        fetch('/clear_detections', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            detectionResults.innerHTML = '<tr><td colspan="3" class="text-center py-4">No detections yet</td></tr>';
+            lastDetectionCount = 0;
+            // Update status message
+            videoStatusElement.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Status: Detections cleared';
+            setTimeout(() => {
+                if (detectionEnabled) {
+                    videoStatusElement.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Status: Detection enabled';
+                } else {
+                    videoStatusElement.innerHTML = '<i class="fas fa-info-circle mr-2"></i>Status: Detection disabled';
+                }
+            }, 2000);
+        })
+        .catch(error => {
+            console.error('Error clearing detections:', error);
+        });
+    });
+    
+    // Start detection updates
+    function startDetectionUpdates() {
+        if (detectionUpdateInterval) {
+            clearInterval(detectionUpdateInterval);
+        }
+        
+        detectionUpdateInterval = setInterval(() => {
+            if (!detectionEnabled || currentTab !== 'video') {
+                clearInterval(detectionUpdateInterval);
+                detectionUpdateInterval = null;
+                return;
+            }
+            
+            fetch('/get_latest_detections')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Only update the UI if there are new detections
+                        if (data.detections.length !== lastDetectionCount) {
+                            displayVideoDetections(data.detections);
+                            lastDetectionCount = data.detections.length;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching detection results:', error);
+                });
+        }, 500); // Update more frequently for smoother UI
+    }
+    
+    // Display video detections
+    function displayVideoDetections(detections) {
+        if (!detections || detections.length === 0) {
+            detectionResults.innerHTML = '<tr><td colspan="3" class="text-center py-4">No detections yet</td></tr>';
+            return;
+        }
+        
+        let html = '';
+        
+        // Show the latest 20 detections, newest first
+        const latestDetections = detections.slice(-20).reverse();
+        
+        latestDetections.forEach(detection => {
+            const className = detection.class;
+            const confidence = Math.round(detection.confidence * 100);
+            const timestamp = detection.timestamp.split(' ')[1]; // Just show the time part
+            
+            let confidenceClass = '';
+            if (confidence >= 80) {
+                confidenceClass = 'confidence-high';
+            } else if (confidence >= 60) {
+                confidenceClass = 'confidence-medium';
+            } else {
+                confidenceClass = 'confidence-low';
+            }
+            
+            html += `
+                <tr>
+                    <td><span class="timestamp">${timestamp}</span></td>
+                    <td><span class="badge badge-primary detection-badge">${className}</span></td>
+                    <td><span class="badge detection-badge ${confidenceClass}">${confidence}%</span></td>
+                </tr>
+            `;
+        });
+        
+        detectionResults.innerHTML = html;
+    }
+    
+    // IMAGE TAB FUNCTIONALITY
+    // Upload and process image
+    imageForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const file = imageUpload.files[0];
+        if (!file) {
+            alert('Please select an image file.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Show loading state
+        imageDetectionResults.innerHTML = '<tr><td colspan="3" class="text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Processing image...</td></tr>';
+        imagePreviewPlaceholder.innerHTML = '<i class="fas fa-spinner fa-spin processing-animation"></i><p>Processing image...</p>';
+        imagePreviewPlaceholder.style.display = 'flex';
+        imagePreview.style.display = 'none';
+        
+        fetch('/upload_image', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Display the processed image
+                imagePreview.src = data.image_path + '?t=' + new Date().getTime(); // Add timestamp to prevent caching
+                imagePreview.style.display = 'block';
+                imagePreviewPlaceholder.style.display = 'none';
+                
+                // Display detection results
+                displayImageDetections(data.detections);
+            } else {
+                imageDetectionResults.innerHTML = `<tr><td colspan="3" class="text-center py-4"><i class="fas fa-exclamation-triangle mr-2"></i>Error: ${data.message}</td></tr>`;
+                imagePreviewPlaceholder.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Error processing image</p>';
+                imagePreviewPlaceholder.style.display = 'flex';
+                imagePreview.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error processing image:', error);
+            imageDetectionResults.innerHTML = '<tr><td colspan="3" class="text-center py-4"><i class="fas fa-exclamation-triangle mr-2"></i>Error processing image</td></tr>';
+            imagePreviewPlaceholder.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Error processing image</p>';
+            imagePreviewPlaceholder.style.display = 'flex';
+            imagePreview.style.display = 'none';
+        });
+    });
+    
+    // Image preview loaded handler
+    imagePreview.addEventListener('load', function() {
+        // Ensure the image is displayed properly
+        this.style.display = 'block';
+        imagePreviewPlaceholder.style.display = 'none';
+    });
+    
+    // Display image detections
+    function displayImageDetections(detections) {
+        if (!detections || detections.length === 0) {
+            imageDetectionResults.innerHTML = '<tr><td colspan="3" class="text-center py-4">No objects detected</td></tr>';
+            return;
+        }
+        
+        let html = '';
+        
+        detections.forEach(detection => {
+            const className = detection.class;
+            const confidence = Math.round(detection.confidence * 100);
+            const box = detection.box;
+            
+            let confidenceClass = '';
+            if (confidence >= 80) {
+                confidenceClass = 'confidence-high';
+            } else if (confidence >= 60) {
+                confidenceClass = 'confidence-medium';
+            } else {
+                confidenceClass = 'confidence-low';
+            }
+            
+            html += `
+                <tr>
+                    <td><span class="badge badge-primary detection-badge">${className}</span></td>
+                    <td><span class="badge detection-badge ${confidenceClass}">${confidence}%</span></td>
+                    <td><span class="box-coords">[${box.join(', ')}]</span></td>
+                </tr>
+            `;
+        });
+        
+        imageDetectionResults.innerHTML = html;
+    }
+</script>
+{% endblock %}

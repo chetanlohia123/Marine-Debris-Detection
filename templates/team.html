@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Meet Our Team - Ocean Shield{% endblock %}
+
+{% block content %}
+<!-- Team Section -->
+<div class="container py-5">
+    <h2 class="text-center mb-5">Meet Our Team</h2>
+    <div class="row">
+        <!-- Abhi Kharel -->
+        <div class="col-md-6 mb-4 text-center" data-aos="fade-up">
+            <div class="team-card">
+                <div class="team-img-container">
+                    <img src="{{ url_for('static', filename='images/abhi.jpg') }}" alt="Abhi Kharel" class="team-img">
+                </div>
+                <h4>Abhi Kharel</h4>
+                <p class="text-muted">Creative Head</p>
+            </div>
+        </div>
+        
+        <!-- Aayusha Bhattarai -->
+        <div class="col-md-6 mb-4 text-center" data-aos="fade-up" data-aos-delay="100">
+            <div class="team-card">
+                <div class="team-img-container">
+                    <img src="{{ url_for('static', filename='images/aayusha.jpg') }}" alt="Aayusha Bhattarai" class="team-img">
+                </div>
+                <h4>Aayusha Bhattarai</h4>
+                <p class="text-muted">Founder & CEO</p>
+            </div>
+        </div>
+        
+        <!-- Add more team members here as needed -->
+        
+    </div>
+</div>
+{% endblock %}
